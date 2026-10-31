@@ -40,7 +40,7 @@ def md_table(df: pd.DataFrame, floatfmt: str = ".2f", index: bool = True) -> str
 
 
 def pct(x: float) -> str:
-    return f"{x:.1%}"
+    return "n/a" if pd.isna(x) else f"{x:.1%}"
 
 
 # ---------------------------------------------------------------- figures
@@ -166,7 +166,11 @@ def write_report(
     w(f"\n{TRAINING_ONLY_POLICY}\n")
 
     w("## Label source\n")
-    w("Labels come from each image's parent folder name, slugified. Pre-made split folders (train/test/valid) are ignored, because we re-split.\n")
+    if cfg_dict.get("label_from") == "filename":
+        w("Labels come from each file name (`100Andesite.png` → `andesite`). The parent folder is kept as the `family` "
+          "column. Pre-made split folders (train/test/valid) are ignored, because we re-split.\n")
+    else:
+        w("Labels come from each image's parent folder name, slugified. Pre-made split folders (train/test/valid) are ignored, because we re-split.\n")
     if label_files:
         w(f"Label-like files found in the dataset ({len(label_files)}). Check that none of them changes the labels: " + ", ".join(f"`{f}`" for f in label_files[:15]) + "\n")
     multi = {k: v for k, v in merged_raw_names.items() if len(v) > 1}
@@ -178,7 +182,7 @@ def write_report(
 
     w("## Classes\n")
     w(f"![class counts]({rel(figures['class_counts'])})\n")
-    cols = [c for c in ["raw_names", "total", "clean", "train", "val", "test", "exact_duplicate", "cross_class_duplicate",
+    cols = [c for c in ["family", "raw_names", "total", "clean", "train", "val", "test", "exact_duplicate", "cross_class_duplicate",
                         "decode_error", "too_small", "plain_bg_share", "blurry_share", "probe_recall", "nearest_class", "nearest_sim", "status"] if c in t]
     w(md_table(t[cols].rename_axis("class")))
     w("")

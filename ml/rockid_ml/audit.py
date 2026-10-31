@@ -18,6 +18,10 @@ from .split import make_splits
 STAT_DTYPES = {"phash": str, "pixel_sha256": str, "decode_error": object}
 
 
+def _pct(x: float) -> str:
+    return "n/a" if pd.isna(x) else f"{x:.1%}"
+
+
 # ---------------------------------------------------------------- analysis (resumable)
 
 def analyze_all(
@@ -132,7 +136,8 @@ def select_and_split(df: pd.DataFrame, cfg: AuditConfig) -> pd.DataFrame:
 
 def manifest(d: pd.DataFrame) -> pd.DataFrame:
     """What gets committed to ml/splits/: enough to rebuild the exact splits from the raw dataset."""
-    m = d[d["split"].notna()][["rel_path", "label_final", "pixel_sha256", "cluster_id", "split"]]
+    cols = ["rel_path", "label_final", "family", "pixel_sha256", "cluster_id", "split"]
+    m = d[d["split"].notna()][[c for c in cols if c in d]]
     return m.rename(columns={"label_final": "label"}).sort_values("rel_path").reset_index(drop=True)
 
 
@@ -146,6 +151,8 @@ def class_table(d: pd.DataFrame, cfg: AuditConfig, probe: dict | None = None, ne
 
     t = pd.DataFrame(index=sorted(d["label_final"].unique()))
     t["raw_names"] = g["label_raw"].agg(lambda s: ", ".join(sorted(set(s.dropna()))))
+    if "family" in d and d["family"].notna().any():
+        t["family"] = g["family"].agg(lambda s: ", ".join(sorted(set(s.dropna()))))
     t["total"] = g.size()
     for col in ("decode_error", "too_small", "exact_duplicate", "cross_class_duplicate", "dropped_class", "clean"):
         t[col] = reasons[col] if col in reasons else 0
@@ -168,7 +175,9 @@ def class_table(d: pd.DataFrame, cfg: AuditConfig, probe: dict | None = None, ne
         return "below_min" if r["clean"] < cfg.min_images_per_class else "ok"
 
     t["status"] = t.apply(status, axis=1)
-    return t.fillna({"train": 0, "val": 0, "test": 0, "clean": 0}).sort_values("clean", ascending=False)
+    counts = ["total", "decode_error", "too_small", "exact_duplicate", "cross_class_duplicate", "dropped_class", "clean", "train", "val", "test"]
+    t[counts] = t[counts].fillna(0).astype(int)
+    return t.sort_values("clean", ascending=False)
 
 
 def recommendations(t: pd.DataFrame, cfg: AuditConfig, probe: dict | None, bg_probe: dict | None, n_cross_clusters: int) -> list[str]:
@@ -182,7 +191,7 @@ def recommendations(t: pd.DataFrame, cfg: AuditConfig, probe: dict | None, bg_pr
         recs.append(f"{n_cross_clusters} duplicate clusters carry more than one label (label noise). Review `review/cross_class.jpg`; they are excluded from the splits.")
     if probe is not None:
         recs.append(
-            f"Linear probe on frozen features: top-1 {probe['top1']:.1%}, top-3 {probe['top3']:.1%} "
+            f"Linear probe on frozen features: top-1 {probe['top1']:.1%}, top-3 {_pct(probe['top3'])} "
             f"(chance {probe['chance']:.1%}). This is a rough floor for fine-tuning, not a prediction of the final score."
         )
     if bg_probe is not None and probe is not None:

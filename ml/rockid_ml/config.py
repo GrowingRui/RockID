@@ -7,6 +7,9 @@ from dataclasses import asdict, dataclass, field
 class AuditConfig:
     kaggle_dataset: str = "kutlayusta/type-of-rocks-and-minerals-dataset"
     seed: int = 42
+    # "folder": class = parent folder. "filename": class = name in the file (e.g. 100Andesite.png),
+    # parent folder kept as `family`. This dataset's folders only hold igneous/metamorphic/sedimentary.
+    label_from: str = "filename"
 
     # Splits (fractions of clean images; the rest is train)
     val_frac: float = 0.15

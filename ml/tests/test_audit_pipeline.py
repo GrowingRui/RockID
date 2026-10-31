@@ -169,4 +169,20 @@ def test_report_end_to_end(dataset, audited, tmp_path):
     text = path.read_text(encoding="utf-8")
     assert "## Classes" in text and "granite" in text and "cross_class_duplicate" in text
     m = audit.manifest(d)
-    assert set(m.columns) == {"rel_path", "label", "pixel_sha256", "cluster_id", "split"}
+    assert set(m.columns) == {"rel_path", "label", "family", "pixel_sha256", "cluster_id", "split"}
+
+
+def test_label_from_filename():
+    from rockid_ml.scan import label_from_filename
+
+    assert label_from_filename("100Andesite.png") == "andesite"
+    assert label_from_filename("Andesite12.png") == "andesite"
+    assert label_from_filename("Quartz_diorite3.jpg") == "quartz-diorite"
+    assert label_from_filename("12_Oil_shale (2).jpeg") == "oil-shale"
+
+
+def test_scan_filename_mode_keeps_folder_as_family(dataset):
+    df = scan_dataset(dataset, label_from="filename")
+    g = df[df["rel_path"].str.endswith("granite_3.jpg")].iloc[0]
+    assert g["label"] == "granite" and g["family"] == "granite"
+    assert df.loc[df["rel_path"].str.endswith("pyrite_mislabeled.jpg"), "label"].item() == "pyrite-mislabeled"

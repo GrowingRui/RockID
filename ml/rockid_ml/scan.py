@@ -24,9 +24,22 @@ def _skip(parts: tuple[str, ...]) -> bool:
     return any(p.startswith(".") or p == "__MACOSX" for p in parts)
 
 
-def scan_dataset(root: str | Path) -> pd.DataFrame:
-    """One row per image. The label is the image's parent folder name, slugified, so
-    `Train/Granite` and `test/granite` end up in the same class."""
+def label_from_filename(name: str) -> str:
+    """`100Andesite.png`, `Andesite12.png`, `Quartz_diorite3.jpg` -> `andesite`, `andesite`, `quartz-diorite`."""
+    return slugify(_name_part(name))
+
+
+def _name_part(name: str) -> str:
+    """File name without extension and without leading/trailing counters."""
+    return re.sub(r"^[\d_\- ()]+|[\d_\- ()]+$", "", Path(name).stem)
+
+
+def scan_dataset(root: str | Path, label_from: str = "folder") -> pd.DataFrame:
+    """One row per image. With `label_from="folder"` the label is the parent folder name, slugified,
+    so `Train/Granite` and `test/granite` end up in the same class. With `"filename"` the label comes
+    from the file name and the folder becomes `family` (e.g. igneous/metamorphic/sedimentary)."""
+    if label_from not in ("folder", "filename"):
+        raise ValueError(f"label_from must be 'folder' or 'filename', got {label_from!r}")
     root = Path(root)
     rows = []
     for p in sorted(root.rglob("*")):
@@ -37,17 +50,24 @@ def scan_dataset(root: str | Path) -> pd.DataFrame:
         label_raw = parents[-1] if parents else None
         if label_raw is not None and label_raw.lower() in SPLIT_DIR_NAMES:
             label_raw = None  # images sit directly in a split folder: no class folder
+        family = slugify(label_raw) if label_raw else None
+        if label_from == "filename":
+            label_raw = _name_part(p.name)
+            label = slugify(label_raw)
+        else:
+            label = family or "unlabeled"
         rows.append(
             {
                 "rel_path": rel.as_posix(),
                 "label_raw": label_raw,
-                "label": slugify(label_raw) if label_raw else "unlabeled",
+                "label": label,
+                "family": family,
                 "source_split": next((d.lower() for d in parents if d.lower() in SPLIT_DIR_NAMES), None),
                 "source_dirs": "/".join(parents[:-1]),
                 "file_bytes": p.stat().st_size,
             }
         )
-    cols = ["rel_path", "label_raw", "label", "source_split", "source_dirs", "file_bytes"]
+    cols = ["rel_path", "label_raw", "label", "family", "source_split", "source_dirs", "file_bytes"]
     return pd.DataFrame(rows, columns=cols)
 
 
