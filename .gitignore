@@ -1,0 +1,42 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Secrets
+.env
+.env.*
+!.env.example
+kaggle.json
+
+# Node (Phase 4+)
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+apps/web/public/models/
+
+# Python / ML
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
+ml/data/
+ml/cache/
+ml/artifacts/
+*.keras
+*.h5
+*.tflite
+saved_model/
+
+# Supabase local
+supabase/.temp/
+supabase/.branches/
+
+# Screenshots from local runs
+temporary screenshots/
