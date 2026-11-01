@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import hashlib
 import os
+import shutil
+import zipfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -45,6 +47,33 @@ def center_square(im: Image.Image) -> Image.Image:
 def client_preprocess(path: str | os.PathLike, size: int = 224) -> np.ndarray:
     """Reference client path: decode (EXIF orientation, alpha on white) → center square → bilinear → uint8 HWC RGB."""
     return np.asarray(center_square(load_rgb(path)).resize((size, size), Image.BILINEAR), dtype=np.uint8)
+
+
+def ensure_extracted(zip_path: str | Path, dest: str | Path, rel_paths) -> list[str]:
+    """Makes sure every `rel_paths` file exists under `dest`, re-extracting the zip if any is missing.
+    Extraction goes to a temporary folder that is renamed when complete, so an interrupted unzip is
+    never mistaken for a finished one. Returns the files still missing afterwards (should be empty)."""
+    dest = Path(dest)
+    rel_paths = list(rel_paths)
+    if all((dest / p).exists() for p in rel_paths):
+        return []
+    tmp = dest.with_name(dest.name + ".partial")
+    shutil.rmtree(tmp, ignore_errors=True)
+    with zipfile.ZipFile(zip_path) as z:
+        z.extractall(tmp)  # zipfile drops absolute paths and ".." entries
+    shutil.rmtree(dest, ignore_errors=True)
+    tmp.rename(dest)
+    return [p for p in rel_paths if not (dest / p).exists()]
+
+
+def missing_hints(zip_path: str | Path, missing: list[str], n: int = 5) -> list[str]:
+    """For a few missing files, what the zip holds under the same file name (ignoring case and folder)."""
+    with zipfile.ZipFile(zip_path) as z:
+        names = z.namelist()
+    by_name: dict[str, list[str]] = {}
+    for x in names:
+        by_name.setdefault(Path(x).name.lower(), []).append(x)
+    return [f"{m} -> zip has {by_name.get(Path(m).name.lower(), ['no file with that name'])}" for m in missing[:n]]
 
 
 def prep_name(rel_path: str) -> str:

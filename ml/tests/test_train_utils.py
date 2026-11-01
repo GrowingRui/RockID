@@ -127,3 +127,25 @@ def test_config_roundtrip_and_run_dir_guard(tmp_path):
     bad.write_text(json.dumps({"learning_rate": 1}))
     with pytest.raises(ValueError):
         train.load_config(bad)
+
+
+def test_ensure_extracted_repairs_partial_unzip(tmp_path):
+    import zipfile
+
+    zp = tmp_path / "ds.zip"
+    names = ["rocks/igneous/1Basalt.png", "rocks/sedimentary/Chert35.png"]
+    with zipfile.ZipFile(zp, "w") as z:
+        for n in names:
+            z.writestr(n, b"x")
+    dest = tmp_path / "raw"
+    (dest / "rocks" / "igneous").mkdir(parents=True)
+    (dest / "rocks" / "igneous" / "1Basalt.png").write_bytes(b"x")  # half-finished earlier unzip
+
+    assert prep.ensure_extracted(zp, dest, names) == []
+    assert all((dest / n).exists() for n in names) and not (tmp_path / "raw.partial").exists()
+    assert prep.ensure_extracted(zp, dest, names) == []  # complete: nothing to do
+
+    missing = prep.ensure_extracted(zp, dest, names + ["rocks/sedimentary/chert99.png"])
+    assert missing == ["rocks/sedimentary/chert99.png"]
+    assert "no file with that name" in prep.missing_hints(zp, missing)[0]
+    assert "Chert35.png" in prep.missing_hints(zp, ["other/CHERT35.png"])[0]
