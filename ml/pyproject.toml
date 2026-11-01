@@ -15,8 +15,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Colab already ships TensorFlow; pin it here once Phase 2 fixes the TF/converter versions.
-embed = ["tensorflow"]
+# Versions verified by the Phase 2 TF.js smoke test (reports/train-mnv2-classes_v1-s42/versions.json):
+# TF 2.21.0 + Keras 3.13 on Colab, tensorflowjs 4.22.0 installed with --no-deps (see scripts/tfjs_convert.py),
+# @tensorflow/tfjs 4.22.0 in Node.
+embed = ["tensorflow==2.21.0"]
 dev = ["pytest"]
 
 [tool.setuptools]
