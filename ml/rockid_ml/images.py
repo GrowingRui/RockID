@@ -89,3 +89,24 @@ def analyze_image(path: str | os.PathLike, plain_tol: float = 24.0) -> dict:
 
 def is_image_file(p: Path) -> bool:
     return p.is_file() and p.suffix.lower() in IMAGE_EXTS
+
+
+_DIHEDRAL = [
+    [Image.Transpose.ROTATE_90], [Image.Transpose.ROTATE_180], [Image.Transpose.ROTATE_270],
+    [Image.Transpose.FLIP_LEFT_RIGHT], [Image.Transpose.FLIP_LEFT_RIGHT, Image.Transpose.ROTATE_90],
+    [Image.Transpose.FLIP_LEFT_RIGHT, Image.Transpose.ROTATE_180], [Image.Transpose.FLIP_LEFT_RIGHT, Image.Transpose.ROTATE_270],
+]
+
+
+def dihedral_phashes(path: str | os.PathLike) -> list[str]:
+    """pHash of the 7 rotated/mirrored versions of an image (same 512 px basis as `analyze_image`).
+    Re-uploaded datasets often contain flipped or rotated copies that a plain pHash misses."""
+    small = load_rgb(path)
+    small.thumbnail((512, 512), Image.BILINEAR)
+    out = []
+    for ops in _DIHEDRAL:
+        im = small
+        for op in ops:
+            im = im.transpose(op)
+        out.append(str(imagehash.phash(im)))
+    return out

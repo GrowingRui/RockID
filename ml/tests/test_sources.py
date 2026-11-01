@@ -60,3 +60,23 @@ def test_keep_commons_image():
     assert not sources.keep_commons_image({**ok, "mime": "image/svg+xml"})
     assert not sources.keep_commons_image({**ok, "height": 200})
     assert not sources.keep_commons_image({**ok, "license": None})
+
+
+def test_dihedral_pairs_find_rotated_and_mirrored_copies(tmp_path):
+    from rockid_ml import dedup, images
+
+    rng = np.random.default_rng(0)
+    base = Image.fromarray(rng.integers(0, 256, (16, 16, 3), dtype=np.uint8)).resize((256, 192), Image.BICUBIC)
+    other = Image.fromarray(rng.integers(0, 256, (16, 16, 3), dtype=np.uint8)).resize((256, 192), Image.BICUBIC)
+    files = {"a.png": base, "a_rot.png": base.transpose(Image.Transpose.ROTATE_90),
+             "a_flip.png": base.transpose(Image.Transpose.FLIP_LEFT_RIGHT), "b.png": other}
+    for n, im in files.items():
+        im.save(tmp_path / n)
+    names = list(files)
+    orig = [images.analyze_image(tmp_path / n)["phash"] for n in names]
+    plain = dedup.hamming_pairs(dedup.phash_to_uint64(orig), 6)
+    assert len(plain) == 0  # a plain pHash misses all of them
+    pairs = dedup.dihedral_pairs(orig, [images.dihedral_phashes(tmp_path / n) for n in names], 6)
+    found = {(names[i], names[j]) for i, j in zip(pairs["i"], pairs["j"])}
+    assert ("a.png", "a_rot.png") in found and ("a.png", "a_flip.png") in found
+    assert not any("b.png" in p for p in found)

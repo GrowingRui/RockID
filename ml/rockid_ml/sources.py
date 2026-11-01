@@ -8,6 +8,7 @@ allow showing them (with credit)."""
 
 from __future__ import annotations
 
+import hashlib
 import html
 import json
 import re
@@ -16,7 +17,6 @@ import subprocess
 import time
 import urllib.parse
 import urllib.request
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import pandas as pd
@@ -167,19 +167,38 @@ def fetch_roboflow(api_key: str, slug: str, root: Path) -> tuple[pd.DataFrame, d
 
 # ---------------------------------------------------------------- Wikimedia Commons
 
-def _commons(params: dict, retries: int = 3) -> dict:
-    params = {**params, "format": "json"}
-    req = urllib.request.Request("https://commons.wikimedia.org/w/api.php?" + urllib.parse.urlencode(params),
-                                 headers={"User-Agent": USER_AGENT})
+_last_request = [0.0]
+
+
+def _polite_get(url: str, min_interval: float = 0.5, retries: int = 6) -> bytes:
+    """One request at a time with a minimum gap; on 429/5xx waits as long as the server asks
+    (Retry-After) or backs off exponentially. Wikimedia blocks clients that go faster."""
+    import urllib.error
+
     for attempt in range(retries):
+        wait = _last_request[0] + min_interval - time.monotonic()
+        if wait > 0:
+            time.sleep(wait)
+        _last_request[0] = time.monotonic()
         try:
+            req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
             with urllib.request.urlopen(req, timeout=60) as r:
-                return json.load(r)
-        except Exception:
+                return r.read()
+        except urllib.error.HTTPError as e:
+            if e.code not in (429, 500, 502, 503, 504) or attempt == retries - 1:
+                raise
+            retry_after = e.headers.get("Retry-After", "")
+            time.sleep(float(retry_after) if retry_after.isdigit() else min(120, 5 * 2 ** attempt))
+        except (urllib.error.URLError, TimeoutError):
             if attempt == retries - 1:
                 raise
-            time.sleep(2 * (attempt + 1))
-    return {}
+            time.sleep(5 * 2 ** attempt)
+    raise RuntimeError("unreachable")
+
+
+def _commons(params: dict) -> dict:
+    params = {**params, "format": "json", "maxlag": 5}
+    return json.loads(_polite_get("https://commons.wikimedia.org/w/api.php?" + urllib.parse.urlencode(params)))
 
 
 def _resolve_category(cat: str) -> str:
@@ -244,30 +263,27 @@ def keep_commons_image(r: dict, min_side: int = 300) -> bool:
         and bool(r.get("license")) and bool(r.get("thumb"))
 
 
-def fetch_commons(stones: list[dict], root: Path, per_stone: int, exclude_subcats: str, workers: int = 4) -> pd.DataFrame:
-    """Downloads ≤ `per_stone` images per stone (800 px thumbnails) with author and license."""
+def fetch_commons(stones: list[dict], root: Path, per_stone: int | dict[str, int], exclude_subcats: str) -> pd.DataFrame:
+    """Downloads up to `per_stone` images per stone (an int, or {slug: n}) as 800 px thumbnails, with
+    author and license. Serial and throttled (see `_polite_get`); files already on disk are reused."""
     source = "commons"
     rows = []
     for s in stones:
-        titles = commons_file_titles(s.get("commons_categories", []), exclude_subcats, per_stone * 2)
-        info = [r for r in commons_image_info(titles) if keep_commons_image(r)][:per_stone]
+        n = per_stone.get(s["slug"], 0) if isinstance(per_stone, dict) else per_stone
+        if n <= 0:
+            continue
+        titles = commons_file_titles(s.get("commons_categories", []), exclude_subcats, n * 2)
+        info = [r for r in commons_image_info(titles) if keep_commons_image(r)][:n]
         d = root / source / s["slug"]
         d.mkdir(parents=True, exist_ok=True)
-
-        def get(r):
-            f = d / (_safe(r["title"].split(":", 1)[1].rsplit(".", 1)[0]) + (".png" if r["mime"] == "image/png" else ".jpg"))
+        for r in info:
+            # Short stable name (long Commons titles break Windows paths); the title stays in `url`.
+            f = d / (f"{s['slug']}_{hashlib.sha1(r['title'].encode()).hexdigest()[:12]}" + (".png" if r["mime"] == "image/png" else ".jpg"))
             if not f.exists():
-                req = urllib.request.Request(r["thumb"], headers={"User-Agent": USER_AGENT})
-                try:
-                    with urllib.request.urlopen(req, timeout=60) as resp:
-                        f.write_bytes(resp.read())
-                except Exception:
-                    return None
-            return {"rel_path": f.relative_to(root).as_posix(), "source": source, "source_class": s["slug"],
-                    "license": r["license"], "author": r["author"], "url": r["page"]}
-
-        with ThreadPoolExecutor(workers) as ex:
-            rows += [x for x in ex.map(get, info) if x]
+                f.write_bytes(_polite_get(r["thumb"]))
+            rows.append({"rel_path": f.relative_to(root).as_posix(), "source": source, "source_class": s["slug"],
+                         "license": r["license"], "author": r["author"], "url": r["page"]})
+        print(f"  commons {s['slug']}: {len(info)} images")
     return pd.DataFrame(rows, columns=INVENTORY_COLS)
 
 

@@ -212,3 +212,19 @@ def test_repo_class_config_v1_is_consistent():
     problems = [p for p in validate_class_config(cc, known) if "is not a dataset class" not in p]
     assert problems == []
     assert not set(cc["keep_below_min"]) & set(cc["drop"])
+
+
+def test_class_too_small_to_split_is_excluded_not_fatal():
+    from rockid_ml.audit import SPLIT_FOLDS, select_and_split
+
+    n_big, n_small = 60, SPLIT_FOLDS - 5
+    df = pd.DataFrame({
+        "rel_path": [f"x{i}.jpg" for i in range(n_big + n_small)],
+        "label": ["big"] * n_big + ["small"] * n_small,
+        "decode_error": None, "width": 200, "height": 200,
+        "pixel_sha256": [f"h{i}" for i in range(n_big + n_small)],
+        "cluster_id": range(n_big + n_small),
+    })
+    d = select_and_split(df, AuditConfig())
+    assert (d.loc[d["label"] == "small", "excluded_reason"] == "too_few_images").all()
+    assert d.loc[d["label"] == "big", "split"].notna().all()

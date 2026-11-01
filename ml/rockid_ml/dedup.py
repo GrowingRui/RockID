@@ -95,3 +95,19 @@ def cluster_summary(df: pd.DataFrame, label_col: str = "label", cluster_col: str
             stacklevel=2,
         )
     return out
+
+
+def dihedral_pairs(orig_hex, variants_hex, max_dist: int) -> pd.DataFrame:
+    """Pairs (i, j), i != j, where a rotated/mirrored version of image i is within `max_dist` of image j.
+    `variants_hex[i]` holds the 7 variant hashes of image i (see images.dihedral_phashes)."""
+    orig = phash_to_uint64(orig_hex)
+    var = np.asarray(variants_hex, dtype=object)
+    parts = []
+    for k in range(var.shape[1]):
+        p = hamming_pairs(phash_to_uint64(var[:, k]), max_dist, b=orig)
+        parts.append(p[p["i"] != p["j"]])
+    out = pd.concat(parts, ignore_index=True)
+    a, b = np.minimum(out["i"], out["j"]), np.maximum(out["i"], out["j"])
+    out = out.assign(i=a, j=b).sort_values("score").drop_duplicates(["i", "j"]).reset_index(drop=True)
+    out["kind"] = "phash-dihedral"
+    return out

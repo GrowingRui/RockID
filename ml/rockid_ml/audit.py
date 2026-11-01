@@ -99,6 +99,8 @@ def assign_clusters(df: pd.DataFrame, valid_mask: pd.Series, pairs: pd.DataFrame
 
 # ---------------------------------------------------------------- selection + split
 
+SPLIT_FOLDS = 20  # make_splits cuts the data into this many stratified group folds
+
 def select_and_split(df: pd.DataFrame, cfg: AuditConfig) -> pd.DataFrame:
     """Applies merges/drops, marks every excluded image with a reason, and splits the rest.
     Adds columns: label_final, cross_class, excluded_reason, split."""
@@ -124,12 +126,17 @@ def select_and_split(df: pd.DataFrame, cfg: AuditConfig) -> pd.DataFrame:
     alive = reason.isna()
     dup = d[alive].duplicated("pixel_sha256", keep="first")
     mark(d.index.isin(dup[dup].index), "exact_duplicate")
+
+    # The stratified split needs at least one image per fold in every class.
+    alive = reason.isna()
+    n = d[alive].groupby("label_final").size()
+    mark(d["label_final"].isin(n[n < SPLIT_FOLDS].index), "too_few_images")
     d["excluded_reason"] = reason
 
     kept = d[reason.isna()]
     d["split"] = None
     d.loc[kept.index, "split"] = make_splits(
-        kept, label_col="label_final", val_frac=cfg.val_frac, test_frac=cfg.test_frac, seed=cfg.seed
+        kept, label_col="label_final", val_frac=cfg.val_frac, test_frac=cfg.test_frac, seed=cfg.seed, n_folds=SPLIT_FOLDS
     )
     return d
 
@@ -154,7 +161,7 @@ def class_table(d: pd.DataFrame, cfg: AuditConfig, probe: dict | None = None, ne
     if "family" in d and d["family"].notna().any():
         t["family"] = g["family"].agg(lambda s: ", ".join(sorted(set(s.dropna()))))
     t["total"] = g.size()
-    for col in ("decode_error", "too_small", "exact_duplicate", "cross_class_duplicate", "dropped_class", "clean"):
+    for col in ("decode_error", "too_small", "exact_duplicate", "cross_class_duplicate", "dropped_class", "too_few_images", "clean"):
         t[col] = reasons[col] if col in reasons else 0
     splits = pd.crosstab(clean["label_final"], clean["split"])
     for s in ("train", "val", "test"):
@@ -177,7 +184,7 @@ def class_table(d: pd.DataFrame, cfg: AuditConfig, probe: dict | None = None, ne
         return "ok"
 
     t["status"] = t.apply(status, axis=1)
-    counts = ["total", "decode_error", "too_small", "exact_duplicate", "cross_class_duplicate", "dropped_class", "clean", "train", "val", "test"]
+    counts = ["total", "decode_error", "too_small", "exact_duplicate", "cross_class_duplicate", "dropped_class", "too_few_images", "clean", "train", "val", "test"]
     t[counts] = t[counts].fillna(0).astype(int)
     return t.sort_values("clean", ascending=False)
 

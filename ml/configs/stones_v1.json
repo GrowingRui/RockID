@@ -211,7 +211,10 @@
       "connaisseur-llc/crystals-yddoa",
       "fma04-fayoum-edu-eg/gemstone-classification"
     ],
-    "commons_per_stone": 300,
+    "commons_per_stone": 80,
+    "commons_per_stone_if_short": 300,
+    "short_below": 150,
+    "_commons": "Every stone gets some Commons photos, so no stone is learned from one photo style only; stones with fewer than short_below images from the other sources get more.",
     "commons_exclude_subcats": "(?i)crystal structure|in art|parageneses|series|flow|by country|fluor-|hackmanite|granite|lapis lazuli$|pietersite|tiger iron|belomorite"
   }
 }
