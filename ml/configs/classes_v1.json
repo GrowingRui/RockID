@@ -1,6 +1,6 @@
 {
   "version": "v1",
-  "status": "proposed",
+  "status": "approved",
   "scope": "rocks only; minerals are added later from a separate dataset (ADR 0001)",
   "min_images_per_class": 100,
   "merges": {

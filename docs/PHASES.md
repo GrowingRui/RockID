@@ -5,8 +5,8 @@ Phases 1–3 (ML, Google Colab) and Phase 4 (web foundation) can run in parallel
 | # | Phase | Depends on | Status |
 |---|---|---|---|
 | 0 | Project setup and decisions | — | in progress |
-| 1 | Dataset audit (`ml/notebooks/01_audit.ipynb`) | 0 | in progress |
-| 2 | Model training and evaluation (`02_train`, `03_evaluate`) | 1 | not started |
+| 1 | Dataset audit (`ml/notebooks/01_audit.ipynb`) | 0 | done (class list v1 approved) |
+| 2 | Model training and evaluation (`02_train`, `03_evaluate`) | 1 | in progress |
 | 3 | Model export and release (`04_export`) | 2 (gate passed) | not started |
 | 4 | Web foundation and UI/UX (mock model) | 0 | not started |
 | 5 | Supabase backend and authentication | 4 | not started |

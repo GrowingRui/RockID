@@ -1,6 +1,6 @@
 # ADR 0001 — Dataset scope and class list v1
 
-Date: 2026-11-01 · Status: **proposed** (class list awaiting the v1 audit numbers and owner approval)
+Date: 2026-11-01 · Status: **accepted** (owner approved the class list on 2026-11-01, after audit `ml/reports/audit-20261101-1006`)
 
 ## Context
 Two audit runs of `kutlayusta/type-of-rocks-and-minerals-dataset`

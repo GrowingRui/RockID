@@ -31,7 +31,7 @@ Only the **Phase 1** items are needed now. The rest can wait until the phase tha
 
 | # | Question | Needed by | Answer |
 |---|---|---|---|
-| Q1 | May the audit merge or drop weak classes? | end of Phase 1 | proposed in ADR 0001, awaiting approval |
+| Q1 | May the audit merge or drop weak classes? | end of Phase 1 | **Yes: class list v1 approved 2026-11-01 (ADR 0001)** |
 | Q2 | Add a "not a rock/mineral" class (needs extra negative images)? | Phase 2 | |
 | — | Minerals in v1? | Phase 1 | **No: rocks only, minerals later (ADR 0001)** |
 | Q3 | 5 s target: measured from tap or page load? Reference device and network? | Phase 6 | proposed: Pixel 6a-class, ~9 Mbps 4G, from "Identify" tap |

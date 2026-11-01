@@ -126,8 +126,8 @@ model to TF.js** so the TensorFlow/Keras/converter versions are pinned first.
 Thresholds are re-checked once the audit fixes the class count.
 
 ### 3.5 Export and versioning (Phase 3)
-One SavedModel → TF.js (uint8 weight quantization, ≈3.5–4 MB; fp16 MobileNetV2 is ≈7 MB and misses
-the budget; fallback α 0.75 or MobileNetV3) and TFLite (fp16 + int8). Release bundle: `model.json`
+One SavedModel → TF.js (fp16 weights, ≈4.4 MB with our head; uint8 is too lossy, see
+[ADR 0002](adr/0002-tfjs-fp16-weights.md); fallback α 0.75 or MobileNetV3) and TFLite (fp16 + int8). Release bundle: `model.json`
 + shards, `model.tflite`, `metadata.json` (input size, dtype, color order, resize method,
 `normalization: in-graph`, ordered label slugs, temperature, thresholds, metrics), `labels.json`,
 `MODEL_CARD.md`, `SHA256SUMS`. Version `rockid-<arch>-vMAJOR.MINOR.PATCH`; a label change is MAJOR.
