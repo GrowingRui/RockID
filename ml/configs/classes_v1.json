@@ -1,0 +1,42 @@
+{
+  "version": "v1",
+  "status": "proposed",
+  "scope": "rocks only; minerals are added later from a separate dataset (ADR 0001)",
+  "min_images_per_class": 100,
+  "merges": {
+    "quartz-monzonite": "granite",
+    "quartz-diorite": "granite",
+    "migmatite": "gneiss",
+    "greenschist": "schist",
+    "blueschist": "schist",
+    "anthracite": "coal",
+    "flint": "chert",
+    "siltstone": "mudstone",
+    "shale": "mudstone",
+    "oil-shale": "mudstone",
+    "wackestone": "limestone",
+    "oolite": "limestone",
+    "chalk": "limestone",
+    "greywacke": "sandstone"
+  },
+  "drop": [
+    "granulite",
+    "carbonatite",
+    "komatiite",
+    "porphyry",
+    "quartzolite",
+    "tephrite",
+    "turbidite",
+    "diamictite",
+    "tuff"
+  ],
+  "keep_below_min": ["obsidian"],
+  "display_names": {
+    "granite": "Granite (granitic rock)",
+    "schist": "Schist",
+    "mudstone": "Mudstone / Shale",
+    "talc-carbonate": "Soapstone (talc-carbonate)",
+    "chert": "Chert / Flint",
+    "coal": "Coal / Anthracite"
+  }
+}

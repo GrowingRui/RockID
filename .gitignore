@@ -40,3 +40,6 @@ supabase/.branches/
 
 # Screenshots from local runs
 temporary screenshots/
+
+# Audit bundles downloaded from Colab (unpacked into ml/ instead)
+rockid_audit_*.zip

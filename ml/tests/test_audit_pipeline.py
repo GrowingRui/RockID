@@ -186,3 +186,29 @@ def test_scan_filename_mode_keeps_folder_as_family(dataset):
     g = df[df["rel_path"].str.endswith("granite_3.jpg")].iloc[0]
     assert g["label"] == "granite" and g["family"] == "granite"
     assert df.loc[df["rel_path"].str.endswith("pyrite_mislabeled.jpg"), "label"].item() == "pyrite-mislabeled"
+
+
+def test_class_config(tmp_path):
+    import json
+
+    from rockid_ml.classes import final_classes, load_class_config, validate_class_config
+
+    p = tmp_path / "c.json"
+    p.write_text(json.dumps({"merges": {"pyrite": "quartz", "typo": "quartz"}, "drop": ["granite"]}))
+    cc = load_class_config(p)
+    labels = {"granite", "quartz", "pyrite"}
+    assert validate_class_config(cc, labels) == ["merge source `typo` is not a dataset class"]
+    assert final_classes(cc, labels) == ["quartz"]
+    cc["merges"]["quartz"] = "granite"
+    probs = validate_class_config(cc, labels)
+    assert any("both a merge target and dropped" in x for x in probs) and any("chained merge" in x for x in probs)
+
+
+def test_repo_class_config_v1_is_consistent():
+    from rockid_ml.classes import load_class_config, validate_class_config
+
+    cc = load_class_config(Path(__file__).parents[1] / "configs" / "classes_v1.json")
+    known = set(cc["merges"]) | set(cc["drop"])
+    problems = [p for p in validate_class_config(cc, known) if "is not a dataset class" not in p]
+    assert problems == []
+    assert not set(cc["keep_below_min"]) & set(cc["drop"])

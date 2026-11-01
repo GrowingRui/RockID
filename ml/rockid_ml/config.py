@@ -36,6 +36,7 @@ class AuditConfig:
     # Filled in after reviewing the first audit run, then re-run the split step
     class_merges: dict[str, str] = field(default_factory=dict)  # {"old-slug": "target-slug"}
     drop_classes: list[str] = field(default_factory=list)
+    keep_below_min: list[str] = field(default_factory=list)  # deliberate exceptions to the minimum
 
     background_probe: bool = True
     embed_size: int = 224

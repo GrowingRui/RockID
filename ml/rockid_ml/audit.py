@@ -172,7 +172,9 @@ def class_table(d: pd.DataFrame, cfg: AuditConfig, probe: dict | None = None, ne
     def status(r):
         if r.name in cfg.drop_classes or r.name == "unlabeled":
             return "dropped"
-        return "below_min" if r["clean"] < cfg.min_images_per_class else "ok"
+        if r["clean"] < cfg.min_images_per_class:
+            return "ok (exception)" if r.name in cfg.keep_below_min else "below_min"
+        return "ok"
 
     t["status"] = t.apply(status, axis=1)
     counts = ["total", "decode_error", "too_small", "exact_duplicate", "cross_class_duplicate", "dropped_class", "clean", "train", "val", "test"]
@@ -201,11 +203,17 @@ def recommendations(t: pd.DataFrame, cfg: AuditConfig, probe: dict | None, bg_pr
             f"Background-only probe: top-1 {bg_probe['top1']:.1%} with the specimen hidden. That is {lift:.0%} of the full probe's "
             f"gain over chance, so the risk that backgrounds act as a shortcut is {level}. The field test set is what settles it."
         )
+        if live["plain_bg_share"].median() < 0.10:
+            recs.append(
+                "Caveat: most images here are close-ups where the rock fills the frame (few plain backgrounds), so the "
+                "\"background-only\" view mostly shows rock texture too. The background probe overstates the shortcut risk "
+                "for this dataset; trust the field test set instead."
+            )
 
     for name, r in live.iterrows():
         notes = []
         near = f"`{r['nearest_class']}` (similarity {r['nearest_sim']:.2f})" if "nearest_class" in r and pd.notna(r.get("nearest_class")) else None
-        if r["clean"] < cfg.min_images_per_class:
+        if r["clean"] < cfg.min_images_per_class and name not in cfg.keep_below_min:
             notes.append(f"only {int(r['clean'])} clean images (minimum {cfg.min_images_per_class}): add data, drop, or merge" + (f" into {near}" if near else ""))
         if "probe_recall" in r and pd.notna(r["probe_recall"]) and r["probe_recall"] < 0.5:
             notes.append(f"probe recall {r['probe_recall']:.0%}: at risk of failing the 50% recall gate" + (f"; most similar class is {near}" if near else ""))
