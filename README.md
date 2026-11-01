@@ -1,14 +1,16 @@
 # RockID
 
-Identify rocks and minerals from a photo, entirely in the browser, then learn about them and keep a
-personal collection.
+Identify crystals and healing stones from a photo, entirely in the browser, then learn what they are,
+their traditional meanings, and keep a personal collection
+([ADR 0004](docs/adr/0004-pivot-to-crystals-and-healing-stones.md); the earlier rock-type work is in `ml/reports/`).
 
 - Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - Phases and acceptance criteria: [docs/PHASES.md](docs/PHASES.md)
 - Setup checklist and open questions: [docs/phase-0-setup.md](docs/phase-0-setup.md)
 - ML pipeline (Google Colab): [ml/README.md](ml/README.md)
 
-> AI identification can be wrong. Never rely on it for safety decisions.
+> AI identification can be wrong, and a photo cannot tell a genuine stone from a dyed or imitation one.
+> Meanings are traditional beliefs, not medical advice.
 
 ## Layout
 
