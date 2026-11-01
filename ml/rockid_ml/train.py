@@ -27,6 +27,12 @@ class TrainConfig:
     run_name: str = "mnv2-classes_v1-s42"  # Drive folder under runs/; same name = resume
     split_manifest: str = "splits/split_manifest_classes_v1.csv"  # relative to ml/
     class_file: str = "configs/classes_v1.json"
+    # Raw images: a zip in MyDrive/RockID/cache/. If it's missing and kaggle_dataset is set, it is downloaded;
+    # stone datasets are built by 01_stones_audit instead. audit_stats_csv (same folder) holds the pHashes
+    # 03_evaluate uses to spot field photos that copy dataset images.
+    raw_zip: str = "dataset.zip"
+    kaggle_dataset: str = "kutlayusta/type-of-rocks-and-minerals-dataset"
+    audit_stats_csv: str = "image_stats.csv"
     seed: int = 42
 
     arch: str = "mobilenet_v2"  # or "mobilenet_v3_large"

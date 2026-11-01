@@ -1,0 +1,217 @@
+{
+  "version": "v1",
+  "status": "approved",
+  "scope": "20 popular crystals and healing stones, tumbled/polished and cut (ADR 0004)",
+  "min_images_per_class": 50,
+  "_matching": "A source class matches a stone when its words equal the stone's name, slug or an alias (case, order, punctuation ignored). Unmatched classes are reported, never guessed.",
+  "stones": [
+    {
+      "slug": "amethyst",
+      "name": "Amethyst",
+      "aliases": [],
+      "commons_categories": [
+        "Amethysts"
+      ]
+    },
+    {
+      "slug": "rose-quartz",
+      "name": "Rose Quartz",
+      "aliases": [
+        "quartz rose",
+        "pink quartz"
+      ],
+      "commons_categories": [
+        "Rose quartz"
+      ]
+    },
+    {
+      "slug": "clear-quartz",
+      "name": "Clear Quartz",
+      "aliases": [
+        "quartz clear",
+        "rock crystal",
+        "quartz",
+        "crystal quartz",
+        "quartz crystal"
+      ],
+      "commons_categories": [
+        "Rock crystal"
+      ]
+    },
+    {
+      "slug": "citrine",
+      "name": "Citrine",
+      "aliases": [],
+      "commons_categories": [
+        "Citrine"
+      ]
+    },
+    {
+      "slug": "smoky-quartz",
+      "name": "Smoky Quartz",
+      "aliases": [
+        "quartz smoky",
+        "smokey quartz"
+      ],
+      "commons_categories": [
+        "Smoky quartz"
+      ]
+    },
+    {
+      "slug": "tigers-eye",
+      "name": "Tiger's Eye",
+      "aliases": [
+        "tiger eye",
+        "tigers eye",
+        "tiger iron eye",
+        "tiger eye stone"
+      ],
+      "commons_categories": [
+        "Tiger's eye"
+      ]
+    },
+    {
+      "slug": "malachite",
+      "name": "Malachite",
+      "aliases": [],
+      "commons_categories": [
+        "Malachite"
+      ]
+    },
+    {
+      "slug": "lapis-lazuli",
+      "name": "Lapis Lazuli",
+      "aliases": [
+        "lapis"
+      ],
+      "commons_categories": [
+        "Lapis lazuli"
+      ]
+    },
+    {
+      "slug": "labradorite",
+      "name": "Labradorite",
+      "aliases": [],
+      "commons_categories": [
+        "Labradorite"
+      ]
+    },
+    {
+      "slug": "green-aventurine",
+      "name": "Green Aventurine",
+      "aliases": [
+        "aventurine green",
+        "aventurine"
+      ],
+      "commons_categories": [
+        "Aventurine"
+      ]
+    },
+    {
+      "slug": "turquoise",
+      "name": "Turquoise",
+      "aliases": [],
+      "commons_categories": [
+        "Turquoise"
+      ]
+    },
+    {
+      "slug": "amazonite",
+      "name": "Amazonite",
+      "aliases": [],
+      "commons_categories": [
+        "Amazonite"
+      ]
+    },
+    {
+      "slug": "sodalite",
+      "name": "Sodalite",
+      "aliases": [],
+      "commons_categories": [
+        "Sodalite"
+      ]
+    },
+    {
+      "slug": "black-obsidian",
+      "name": "Black Obsidian",
+      "aliases": [
+        "obsidian",
+        "obsidian black"
+      ],
+      "commons_categories": [
+        "Obsidian"
+      ]
+    },
+    {
+      "slug": "black-tourmaline",
+      "name": "Black Tourmaline",
+      "aliases": [
+        "tourmaline black",
+        "schorl"
+      ],
+      "commons_categories": [
+        "Schorl"
+      ]
+    },
+    {
+      "slug": "hematite",
+      "name": "Hematite",
+      "aliases": [
+        "haematite"
+      ],
+      "commons_categories": [
+        "Hematite"
+      ]
+    },
+    {
+      "slug": "pyrite",
+      "name": "Pyrite",
+      "aliases": [
+        "iron pyrite",
+        "fools gold"
+      ],
+      "commons_categories": [
+        "Pyrite"
+      ]
+    },
+    {
+      "slug": "carnelian",
+      "name": "Carnelian",
+      "aliases": [
+        "cornelian"
+      ],
+      "commons_categories": [
+        "Carnelian"
+      ]
+    },
+    {
+      "slug": "moonstone",
+      "name": "Moonstone",
+      "aliases": [],
+      "commons_categories": [
+        "Moonstone"
+      ]
+    },
+    {
+      "slug": "fluorite",
+      "name": "Fluorite",
+      "aliases": [
+        "fluorspar"
+      ],
+      "commons_categories": [
+        "Fluorite"
+      ]
+    }
+  ],
+  "sources": {
+    "kaggle": [
+      "lsind18/gemstones-images"
+    ],
+    "roboflow": [
+      "connaisseur-llc/crystals-yddoa",
+      "fma04-fayoum-edu-eg/gemstone-classification"
+    ],
+    "commons_per_stone": 300,
+    "commons_exclude_subcats": "(?i)crystal structure|in art|parageneses|series|flow|by country|fluor-|hackmanite|granite|lapis lazuli$|pietersite|tiger iron|belomorite"
+  }
+}

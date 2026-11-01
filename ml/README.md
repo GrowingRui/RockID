@@ -6,7 +6,8 @@ Not part of the pnpm workspace.
 | Path | Contents |
 |---|---|
 | `rockid_ml/` | Reusable pipeline code; notebooks only call it |
-| `notebooks/01_audit.ipynb` | Phase 1: dataset audit and splits |
+| `notebooks/01_audit.ipynb` | Phase 1 (rocks, superseded): dataset audit and splits |
+| `notebooks/01_stones_audit.ipynb` | Stones: builds the dataset from Kaggle, Roboflow and Wikimedia Commons, then audits it |
 | `notebooks/02_train.ipynb` | Phase 2: TF.js smoke test, then two-stage training |
 | `notebooks/03_evaluate.ipynb` | Phase 2: calibration, test + field scores, go/no-go gate |
 | `configs/` | Versioned class lists (`classes_vN.json`) and training configs (`train_vN.json`); current: `classes_v2` + `train_v3` |
@@ -15,7 +16,17 @@ Not part of the pnpm workspace.
 | `reports/` | Audit and evaluation reports (markdown + charts only, never dataset images) |
 | `tests/` | pytest suite, runs locally on synthetic images |
 
-## Phase 1: run the audit
+## Stones: build and audit the dataset
+
+1. Colab secrets: `KAGGLE_USERNAME`, `KAGGLE_KEY`, `ROBOFLOW_API_KEY` (notebook access on).
+2. Open `notebooks/01_stones_audit.ipynb`, T4 GPU, *Run all*.
+3. Step 4 lists every class name each source has and which stone it was matched to. Missing a stone
+   under another name? Add it to that stone's `aliases` in `configs/stones_v1.json` and re-run.
+4. Step 10 downloads a zip: report, `splits/split_manifest_stones_v1.csv` and
+   `splits/stones_v1_sources.csv` (source, license and author per image).
+5. Train with `02_train` and `CONFIG_FILE = "configs/train_stones_v1.json"`.
+
+## Phase 1: run the audit (rocks, superseded by ADR 0004)
 
 1. Do the Phase 1 items in [../docs/phase-0-setup.md](../docs/phase-0-setup.md) (Kaggle secrets, code location).
 2. Open `notebooks/01_audit.ipynb` in Colab (*File → Upload notebook*, or *File → Open notebook → GitHub*).
