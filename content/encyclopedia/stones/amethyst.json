@@ -1,0 +1,71 @@
+{
+  "slug": "amethyst",
+  "name": "Amethyst",
+  "also_called": [],
+  "status": "draft",
+  "summary": "The purple variety of quartz, one of the most popular stones in crystal traditions, where it stands for calm and intuition.",
+
+  "what_it_is": "Amethyst is quartz, the same mineral as clear rock crystal, colored violet. The color comes from small amounts of iron in the crystal that were changed by natural radiation in the earth over a very long time. It ranges from pale lilac to deep purple, and the color is often uneven, with darker zones near the tips of crystals.",
+
+  "how_to_recognize": {
+    "color": "Pale lilac to deep violet, often in zones or bands",
+    "appearance": "Glassy shine; tumbled stones are translucent with lighter and darker patches. Raw pieces form clusters of pointed six-sided crystals, often lining the inside of geodes.",
+    "lookalikes": [
+      {
+        "slug": "fluorite",
+        "how_to_tell": "Purple fluorite is much softer and often shows green or blue bands in the same stone. A photo alone may not tell them apart."
+      },
+      {
+        "slug": null,
+        "name": "Purple glass",
+        "how_to_tell": "Glass can look identical in a photo. Glass often has tiny round bubbles and feels warmer to the touch than quartz."
+      }
+    ]
+  },
+
+  "facts": {
+    "mineral": "Quartz (silicon dioxide, SiO₂)",
+    "hardness_mohs": "7",
+    "main_sources": ["Brazil", "Uruguay", "Bolivia", "Zambia", "Canada"],
+    "birthstone": "February"
+  },
+
+  "history": "The name comes from the ancient Greek amethystos, meaning \"not intoxicated\": the ancient Greeks believed the stone protected its owner from drunkenness, and carved drinking cups from it. Amethyst was once counted among the most precious gems, alongside diamond, ruby, sapphire and emerald, until large deposits in places such as Brazil made it common.",
+
+  "tradition": {
+    "summary": "In crystal healing traditions, amethyst is associated with calm, intuition and spiritual awareness. It is one of the stones most often used in meditation.",
+    "associations": ["calm", "peace of mind", "intuition", "spiritual awareness", "meditation"],
+    "chakras": ["crown", "third-eye"],
+    "zodiac": ["aquarius", "pisces"],
+    "how_people_use_it": [
+      "Held or placed nearby during meditation",
+      "Kept on a nightstand or under a pillow, a tradition linked to peaceful dreams",
+      "Worn as jewelry as a reminder to stay calm and centered"
+    ]
+  },
+
+  "care": [
+    "Keep out of strong sunlight for long periods: the purple color can fade.",
+    "Clean with lukewarm water, mild soap and a soft brush; dry with a soft cloth.",
+    "Avoid heat and sudden temperature changes. Heating turns amethyst yellow or brown, which is how much of the \"citrine\" on the market is made."
+  ],
+
+  "disclaimer": "tradition-not-medical",
+
+  "images": [],
+
+  "sources": [
+    {
+      "title": "Amethyst — Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Amethyst",
+      "license": "CC BY-SA 4.0 (facts only, text written independently)",
+      "used_for": ["what_it_is", "facts", "history", "care"]
+    },
+    {
+      "title": "crystalSearch — gemstones_and_chakras.csv (aar0np)",
+      "url": "https://github.com/aar0np/crystalSearch/blob/main/gemstones_and_chakras.csv",
+      "license": "Apache-2.0",
+      "used_for": ["tradition", "facts.main_sources"]
+    }
+  ]
+}
