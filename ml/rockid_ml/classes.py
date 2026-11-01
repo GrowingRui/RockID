@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pandas as pd
+
 
 def load_class_config(path: str | Path) -> dict:
     cc = json.loads(Path(path).read_text(encoding="utf-8"))
@@ -36,3 +38,12 @@ def validate_class_config(cc: dict, labels: set[str]) -> list[str]:
 def final_classes(cc: dict, labels: set[str]) -> list[str]:
     merged = {cc["merges"].get(l, l) for l in labels}
     return sorted(merged - set(cc["drop"]))
+
+
+def subset_manifest(manifest: pd.DataFrame, keep: list[str]) -> pd.DataFrame:
+    """A narrower class list from an existing split manifest: rows of the kept classes, same split for
+    every image. Clusters never spanned splits before, so they still don't, and the test set stays unseen."""
+    unknown = sorted(set(keep) - set(manifest["label"]))
+    if unknown:
+        raise ValueError(f"not in the manifest: {unknown}")
+    return manifest[manifest["label"].isin(keep)].reset_index(drop=True)

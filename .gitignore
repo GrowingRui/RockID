@@ -33,6 +33,7 @@ ml/artifacts/
 *.keras
 *.h5
 *.tflite
+*.npz
 saved_model/
 
 # Supabase local

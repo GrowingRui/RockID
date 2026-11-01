@@ -149,3 +149,15 @@ def test_ensure_extracted_repairs_partial_unzip(tmp_path):
     assert missing == ["rocks/sedimentary/chert99.png"]
     assert "no file with that name" in prep.missing_hints(zp, missing)[0]
     assert "Chert35.png" in prep.missing_hints(zp, ["other/CHERT35.png"])[0]
+
+
+def test_subset_manifest_keeps_splits():
+    from rockid_ml import classes, split
+
+    m = pd.DataFrame({"rel_path": list("abcdef"), "label": ["x", "x", "y", "y", "z", "z"],
+                      "cluster_id": [1, 1, 2, 3, 4, 5], "split": ["train", "train", "test", "val", "train", "test"]})
+    s = classes.subset_manifest(m, ["x", "y"])
+    assert s["label"].tolist() == ["x", "x", "y", "y"] and s["split"].tolist() == ["train", "train", "test", "val"]
+    assert split.leaking_clusters(s).empty
+    with pytest.raises(ValueError):
+        classes.subset_manifest(m, ["x", "nope"])

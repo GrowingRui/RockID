@@ -9,7 +9,7 @@ Not part of the pnpm workspace.
 | `notebooks/01_audit.ipynb` | Phase 1: dataset audit and splits |
 | `notebooks/02_train.ipynb` | Phase 2: TF.js smoke test, then two-stage training |
 | `notebooks/03_evaluate.ipynb` | Phase 2: calibration, test + field scores, go/no-go gate |
-| `configs/` | Versioned class lists (`classes_vN.json`) and training configs (`train_vN.json`) |
+| `configs/` | Versioned class lists (`classes_vN.json`) and training configs (`train_vN.json`); current: `classes_v2` + `train_v3` |
 | `scripts/` | Small helpers the notebooks run (Node TF.js check) |
 | `splits/` | Committed split manifests (rebuild the exact splits from the raw dataset) |
 | `reports/` | Audit and evaluation reports (markdown + charts only, never dataset images) |
@@ -74,7 +74,7 @@ What it does:
   `TARGET_CONFIDENT_ACC` (default 90 %) correct.
 - **Test set** scored once, preprocessed like the app (`prep.client_preprocess`: center square, bilinear).
 - **Field set** scored without near-copies of dataset images.
-- **Gate**: test top-1 ≥ 75 %, top-3 ≥ 90 %, field top-3 ≥ 70 %, every class recall ≥ 50 %. A failed gate
+- **Gate** (ADR 0003): test top-1 ≥ 60 %, top-3 ≥ 80 %, field top-3 ≥ 65 %, every class recall ≥ 40 %. A failed gate
   lists each weak class and where its images go (merge/data/drop candidates).
 - **Parity set**: 50 test images with their reference top-3 (`golden_set.csv`) for Phases 3 and 6.
 

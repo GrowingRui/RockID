@@ -54,7 +54,7 @@ def test_fit_thresholds_meets_target_and_flags_impossible():
 
 
 def test_gate_and_missing_field_set():
-    test = {"top1": 0.8, "top3": 0.95, "min_recall": 0.4, "min_recall_class": "c"}
+    test = {"top1": 0.8, "top3": 0.95, "min_recall": 0.3, "min_recall_class": "c"}
     g = evaluate.gate(test, None)
     assert g["result"].tolist() == ["pass", "pass", "missing", "FAIL"]
     g = evaluate.gate({**test, "min_recall": 0.6}, {"top3": 0.75})

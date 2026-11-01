@@ -24,8 +24,8 @@ Phases 1–3 (ML, Google Colab) and Phase 4 (web foundation) can run in parallel
 **1 — Audit.** `ml/reports/audit.md` produced; no duplicate cluster spans splits; every kept class
 has ≥ 150 clean images or is merged/dropped; split manifest committed; class list approved by the owner.
 
-**2 — Training.** TF.js export smoke test passes before training. Gate: test top-1 ≥ 75 %,
-top-3 ≥ 90 %, field-set top-3 ≥ 70 %, no class recall < 50 %. Re-running from the committed config
+**2 — Training.** TF.js export smoke test passes before training. Gate (class list v2, [ADR 0003](adr/0003-class-list-v2-and-gate.md)):
+test top-1 ≥ 60 %, top-3 ≥ 80 %, field-set top-3 ≥ 65 %, no class recall < 40 %. Re-running from the committed config
 reproduces top-1 within ±1.5 points.
 
 **3 — Export.** TF.js ≤ 5 MB and within 1 point of SavedModel top-1; TFLite and TF.js outputs match

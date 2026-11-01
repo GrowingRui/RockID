@@ -1,0 +1,57 @@
+{
+  "version": "v2",
+  "status": "approved",
+  "scope": "rocks only; the 13 classes the v1-data model can tell apart (ADR 0003). Dropped classes return as more photos are collected.",
+  "derived_from": "classes_v1.json + splits/split_manifest_classes_v1.csv (same split per image)",
+  "min_images_per_class": 100,
+  "merges": {
+    "quartz-monzonite": "granite",
+    "quartz-diorite": "granite",
+    "migmatite": "gneiss",
+    "anthracite": "coal",
+    "wackestone": "limestone",
+    "oolite": "limestone",
+    "chalk": "limestone",
+    "greywacke": "sandstone"
+  },
+  "drop": [
+    "amphibolite",
+    "andesite",
+    "blueschist",
+    "carbonatite",
+    "chert",
+    "conglomerate",
+    "diamictite",
+    "evaporite",
+    "flint",
+    "granulite",
+    "greenschist",
+    "hornfels",
+    "komatiite",
+    "marble",
+    "mudstone",
+    "oil-shale",
+    "phyllite",
+    "porphyry",
+    "pyroxenite",
+    "quartzite",
+    "quartzolite",
+    "rhyolite",
+    "schist",
+    "scoria",
+    "shale",
+    "siltstone",
+    "slate",
+    "talc-carbonate",
+    "tephrite",
+    "tuff",
+    "turbidite"
+  ],
+  "keep_below_min": [
+    "obsidian"
+  ],
+  "display_names": {
+    "granite": "Granite (granitic rock)",
+    "coal": "Coal / Anthracite"
+  }
+}

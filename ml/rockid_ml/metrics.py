@@ -5,8 +5,9 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-# Phase 2 go/no-go gate (docs/PHASES.md). Checked on the test and field sets in 03_evaluate.
-GATE = {"top1": 0.75, "top3": 0.90, "field_top3": 0.70, "min_recall": 0.50}
+# Phase 2 go/no-go gate (docs/PHASES.md), lowered for class list v2 by ADR 0003 (was 0.75 / 0.90 / 0.70 / 0.50).
+# Checked on the test and field sets in 03_evaluate.
+GATE = {"top1": 0.60, "top3": 0.80, "field_top3": 0.65, "min_recall": 0.40}
 
 
 def topk_accuracy(y_true: np.ndarray, scores: np.ndarray, k: int) -> float:

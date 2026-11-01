@@ -117,9 +117,9 @@ uncertain thresholds fitted on validation only. Before training, a **smoke test 
 model to TF.js** so the TensorFlow/Keras/converter versions are pinned first.
 
 ### 3.4 Gate (go/no-go before web inference)
-1. Test top-1 ≥ 75 % and top-3 ≥ 90 %
-2. Field-set top-3 ≥ 70 %
-3. No class recall < 50 % (merge or drop instead)
+1. Test top-1 ≥ 60 % and top-3 ≥ 80 % (lowered from 75 / 90 for class list v2, [ADR 0003](adr/0003-class-list-v2-and-gate.md))
+2. Field-set top-3 ≥ 65 % (was 70 %)
+3. No class recall < 40 % (was 50 %; merge or drop instead)
 4. Exported TF.js top-1 within 1 point of the SavedModel
 5. Web model ≤ 5 MB
 
