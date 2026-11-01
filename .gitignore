@@ -44,3 +44,5 @@ temporary screenshots/
 
 # Audit bundles downloaded from Colab (unpacked into ml/ instead)
 rockid_audit_*.zip
+rockid_train_*.zip
+rockid_eval_*.zip
